@@ -58,3 +58,43 @@ SELECT c.nome AS categoria,
 FROM categoria c
 LEFT JOIN transacao t ON t.categoria_id = c.id
 GROUP BY c.id, c.nome;
+
+-- QUERIES MAIS SIMPLES
+
+-- LISTAR TODAS TRANSACOES
+SELECT t.id, t.data_mov, t.tipo, t.valor, t.descricao, c.nome AS categoria
+FROM transacao t
+JOIN categoria c ON t.categoria_id = c.id
+ORDER BY t.data_mov DESC;
+
+--SALDO TOTAL
+SELECT saldo_total FROM vw_saldo_total;
+
+--TOTAIS POR CATEGORIA (RF04)
+SELECT * FROM vw_totais_categoria;
+
+--DESPESAS DO MÊS ATUAL
+SELECT t.valor, t.data_mov, c.nome AS categoria
+FROM transacao t
+JOIN categoria c ON t.categoria_id = c.id
+WHERE t.tipo = 'DESPESA'
+  AND MONTH(t.data_mov) = MONTH(CURDATE())
+  AND YEAR(t.data_mov) = YEAR(CURDATE())
+ORDER BY t.valor DESC;
+
+--RECEITAS DO MÊS ATUAL
+SELECT t.valor, t.data_mov, c.nome AS categoria
+FROM transacao t
+JOIN categoria c ON t.categoria_id = c.id
+WHERE t.tipo = 'RECEITA'
+  AND MONTH(t.data_mov) = MONTH(CURDATE())
+  AND YEAR(t.data_mov) = YEAR(CURDATE());
+
+--TOP 3 CATEGORIAS MAIS GASTAS
+SELECT c.nome, SUM(t.valor) AS total
+FROM transacao t
+JOIN categoria c ON t.categoria_id = c.id
+WHERE t.tipo = 'DESPESA'
+GROUP BY c.id, c.nome
+ORDER BY total DESC
+LIMIT 3;
